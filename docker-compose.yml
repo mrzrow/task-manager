@@ -1,0 +1,38 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: zrow
+      POSTGRES_PASSWORD: 8319
+      POSTGRES_DB: task-manager-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      - db
+    environment:
+      MONGO_URL: mongodb://mongo:27017/task-manager-db
+      POSTGRES_URL: postgresql+asyncpg://zrow:8319@db:5432/task-manager-db
+      POSTGRES_ECHO: "true"
+      API_PREFIX: /api/v1
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+
+  alembic:
+    build: .
+    depends_on:
+      - db
+    entrypoint: ["/wait-for-it.sh", "db:5432", "--", "alembic", "upgrade", "head"]
+    environment:
+      POSTGRES_URL: postgresql+psycopg2://zrow:8319@db:5432/task-manager-db
+    volumes:
+      - .:/app
+
+volumes:
+  postgres_data:
