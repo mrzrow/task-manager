@@ -1,5 +1,4 @@
-from pydantic import BaseModel
-from typing import TYPE_CHECKING
+from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
 
@@ -10,6 +9,8 @@ class TaskBase(BaseModel):
     completed: bool
     due_date: datetime | None = None
     user_id: int
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TaskGetById(TaskBase):
@@ -38,6 +39,3 @@ class TaskUpdate(BaseModel):
 
 class TaskDelete(BaseModel):
     id: int
-
-
-TaskBase.model_rebuild()
