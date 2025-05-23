@@ -31,7 +31,7 @@ class UserService:
         users = await self.uow.user.list()
         return [UserBase.model_validate(user, from_attributes=True) for user in users]
     
-    async def update_user(self, user_update: UserUpdate) -> UserBase:
+    async def update_user(self, user_update: UserUpdate) -> UserBase | None:
         user_id = user_update.id
         user = await self.uow.user.list(id=user_id)
         if not user:
